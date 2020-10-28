@@ -1,6 +1,6 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'Spinnaker Compatibility Test Runner'
+description: 'Action for running Spinnaker compatibility tests'
+author: 'Armory'
 inputs:
   versions: 
     description: spinnaker versions payload
