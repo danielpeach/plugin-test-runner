@@ -16,6 +16,8 @@ jobs:
           java-version: 11
       - uses: actions/checkout@v2
       - run: |
+          ls -la
+      - run: |
           chmod +x ./__tests__/crd-plugin/gradlew
       - run: |
           npm install
