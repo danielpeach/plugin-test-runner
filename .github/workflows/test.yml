@@ -1,10 +1,9 @@
 name: 'build-test'
-on: # rebuild any PRs and main branch changes
+on: 
   pull_request:
   push:
     branches:
       - main
-      - 'releases/*'
 
 jobs:
   build: # make sure build/ci work properly
@@ -16,12 +15,6 @@ jobs:
       - uses: actions/setup-java@v1
         with:
           java-version: 11
-      # - run: |
-      #     ls -la ./__tests__
-      # - run: |
-      #     ls -la ./__tests__/crd-plugin
-      # - run: |
-      #     chmod +x ./__tests__/crd-plugin/gradlew
       - run: |
           npm install
       - run: |
