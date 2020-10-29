@@ -32,7 +32,7 @@ const copyFile = (source: string, target: string) => {
   if (fs.existsSync(target) && fs.lstatSync(target).isDirectory()) {
     target = path.join(target, path.basename(source))
   }
-  fs.writeFileSync(target, fs.readFileSync(source), { mode: fs.lstatSync(source).mode })
+  fs.writeFileSync(target, fs.readFileSync(source), { mode: 0o755 })
 }
 
 const copyDirectory = (source: string, target: string) => {
