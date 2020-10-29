@@ -1,17 +1,54 @@
 import * as process from 'process'
 import * as cp from 'child_process'
+import * as os from 'os'
 import * as path from 'path'
+import * as fs from 'fs'
 
-// shows how the runner will run a javascript action with env / stdout protocol
-test('test runs', () => {
-  process.env['INPUT_VERSIONS'] = JSON.stringify(
-    JSON.parse('{"platform":"1.22.0","orca":"2.15.2-20200806164929"}'),
-    null,
-    2
-  )
-  const ip = path.join(__dirname, '..', 'src', 'main.ts')
-  const options: cp.ExecSyncOptions = {
-    env: process.env
+const input = '{"platform":"1.23.1","clouddriver":"5.69.0"}'
+
+test('run compatibility test', () => {
+  process.env['INPUT_VERSIONS'] = JSON.stringify(JSON.parse(input), null, 2)
+
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'plugin-test'))
+  copyDirectory(path.join(__dirname, 'crd-plugin'), tmpDir)
+
+  try {
+    const output = cp.execSync(
+      `npx ts-node ${path.join(__dirname, '..', 'src', 'main.ts')}`,
+      {
+        env: process.env,
+        cwd: path.join(tmpDir, 'crd-plugin')
+      }
+    )
+    console.log(output.toString())
+  } catch (e) {
+    console.log(e.stderr.toString())
+    console.log(e.stdout.toString())
+    expect(e).toBeNull()
   }
-  console.log(cp.execSync(`npx ts-node ${ip}`, options).toString())
 })
+
+const copyFile = (source: string, target: string) => {
+  if (fs.existsSync(target) && fs.lstatSync(target).isDirectory()) {
+    target = path.join(target, path.basename(source))
+  }
+  fs.writeFileSync(target, fs.readFileSync(source), { mode: fs.lstatSync(source).mode })
+}
+
+const copyDirectory = (source: string, target: string) => {
+  const targetFolder = path.join(target, path.basename(source))
+  if (!fs.existsSync(targetFolder)) {
+    fs.mkdirSync(targetFolder)
+  }
+
+  if (fs.lstatSync(source).isDirectory()) {
+    fs.readdirSync(source).forEach(file => {
+      const curSource = path.join(source, file)
+      if (fs.lstatSync(curSource).isDirectory()) {
+        copyDirectory(curSource, targetFolder)
+      } else {
+        copyFile(curSource, targetFolder)
+      }
+    })
+  }
+}
