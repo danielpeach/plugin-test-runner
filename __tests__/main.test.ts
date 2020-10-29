@@ -9,15 +9,20 @@ const input = '{"platform":"1.23.1","clouddriver":"5.69.0"}'
 test('run compatibility test', () => {
   process.env['INPUT_VERSIONS'] = JSON.stringify(JSON.parse(input), null, 2)
 
-  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'plugin-test'))
-  copyDirectory(path.join(__dirname, 'crd-plugin'), tmpDir)
+  let testDir: string;
+  if (process.env["CI"]) {
+    testDir = __dirname
+  } else {
+    testDir = fs.mkdtempSync(path.join(os.tmpdir(), 'plugin-test'))
+    copyDirectory(path.join(__dirname, 'crd-plugin'), testDir)
+  }
 
   try {
     const output = cp.execSync(
       `npx ts-node ${path.join(__dirname, '..', 'src', 'main.ts')}`,
       {
         env: process.env,
-        cwd: path.join(tmpDir, 'crd-plugin')
+        cwd: path.join(testDir, 'crd-plugin')
       }
     )
     console.log(output.toString())
@@ -32,7 +37,7 @@ const copyFile = (source: string, target: string) => {
   if (fs.existsSync(target) && fs.lstatSync(target).isDirectory()) {
     target = path.join(target, path.basename(source))
   }
-  fs.writeFileSync(target, fs.readFileSync(source), { mode: 0o755 })
+  fs.writeFileSync(target, fs.readFileSync(source), { mode: fs.lstatSync(source).mode })
 }
 
 const copyDirectory = (source: string, target: string) => {
