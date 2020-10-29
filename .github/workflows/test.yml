@@ -16,7 +16,9 @@ jobs:
           java-version: 11
       - uses: actions/checkout@v2
       - run: |
-          ls -la
+          ls -la ./__tests__
+      - run: |
+          ls -la ./__tests__/crd-plugin
       - run: |
           chmod +x ./__tests__/crd-plugin/gradlew
       - run: |
