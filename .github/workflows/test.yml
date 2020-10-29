@@ -10,17 +10,18 @@ jobs:
   build: # make sure build/ci work properly
     runs-on: ubuntu-latest
     steps:
-      - name: set up java
-        uses: actions/setup-java@v1
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - uses: actions/setup-java@v1
         with:
           java-version: 11
-      - uses: actions/checkout@v2
-      - run: |
-          ls -la ./__tests__
-      - run: |
-          ls -la ./__tests__/crd-plugin
-      - run: |
-          chmod +x ./__tests__/crd-plugin/gradlew
+      # - run: |
+      #     ls -la ./__tests__
+      # - run: |
+      #     ls -la ./__tests__/crd-plugin
+      # - run: |
+      #     chmod +x ./__tests__/crd-plugin/gradlew
       - run: |
           npm install
       - run: |
