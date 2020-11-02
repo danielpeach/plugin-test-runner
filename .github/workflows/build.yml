@@ -19,6 +19,8 @@ jobs:
           npm install
       - run: |
           npm run test
+      - run: |
+          npm run build && npm run package
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: commit build to dist/
