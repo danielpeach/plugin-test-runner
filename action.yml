@@ -2,7 +2,7 @@ name: 'Spinnaker Compatibility Test Runner'
 description: 'Action for running Spinnaker compatibility tests'
 author: 'Armory'
 inputs:
-  versions: 
+  payload: 
     description: spinnaker versions payload
 runs:
   using: 'node12'
