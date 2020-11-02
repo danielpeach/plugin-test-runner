@@ -4,6 +4,8 @@ author: 'Armory'
 inputs:
   payload: 
     description: spinnaker versions payload
+  skip_upload:
+    default: false
 runs:
   using: 'node12'
   main: 'dist/index.js'

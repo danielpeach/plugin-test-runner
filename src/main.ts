@@ -36,7 +36,7 @@ allprojects { project ->
   const runID = process.env['GITHUB_RUN_ID']
   const encodedPayload = Buffer.from(payload).toString('base64')
   const artifactName = `${runID}-${encodedPayload}`
-  if (process.env['CI']) {
+  if (process.env['CI'] && !core.getInput('skip_upload')) {
     try {
       core.info(`Uploading dummy artifact ${artifactName}`)
       const artifactClient = create()
