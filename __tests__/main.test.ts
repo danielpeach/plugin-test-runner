@@ -6,6 +6,7 @@ import * as fs from 'fs'
 
 test('run compatibility test', () => {
   process.env['INPUT_PAYLOAD'] = '{"platform":"1.23.1","clouddriver":"5.69.0"}'
+  process.env['INPUT_SKIP_UPLOAD'] = 'true'
   process.env['GITHUB_RUN_ID'] = '12345'
 
   const testDir = fs.mkdtempSync(path.join(os.tmpdir(), 'plugin-test'))
