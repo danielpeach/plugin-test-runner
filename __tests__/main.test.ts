@@ -4,10 +4,9 @@ import * as os from 'os'
 import * as path from 'path'
 import * as fs from 'fs'
 
-const input = '{"platform":"1.23.1","clouddriver":"5.69.0"}'
-
 test('run compatibility test', () => {
-  process.env['INPUT_VERSIONS'] = JSON.stringify(JSON.parse(input), null, 2)
+  process.env['INPUT_PAYLOAD'] = '{"platform":"1.23.1","clouddriver":"5.69.0"}'
+  process.env['GITHUB_RUN_ID'] = '12345'
 
   const testDir = fs.mkdtempSync(path.join(os.tmpdir(), 'plugin-test'))
   copyDirectory(path.join(__dirname, 'crd-plugin'), testDir)

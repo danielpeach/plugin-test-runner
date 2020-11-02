@@ -4,7 +4,7 @@ import {exec} from '@actions/exec'
 import {create, UploadOptions} from '@actions/artifact'
 
 async function run(): Promise<void> {
-  const payload = core.getInput('versions')
+  const payload = core.getInput('payload')
 
   try {
     const initGradle = `
@@ -14,7 +14,7 @@ allprojects { project ->
   def versions = new JsonSlurper().parseText("""${payload}""")
   project.afterEvaluate {
     def spinnakerPlugin = project.extensions.findByName("spinnakerPlugin")
-    if (spinnakerPlugin != null) {
+    if (spinnakerPlugin != null && versions[spinnakerPlugin.serviceName] != null) {
       def service = spinnakerPlugin.serviceName
       def serviceVersion = versions[spinnakerPlugin.serviceName]
       def platform = project.dependencies.platform("com.netflix.spinnaker.\${service}:\${service}-bom:$serviceVersion") {
@@ -33,12 +33,11 @@ allprojects { project ->
     core.setFailed(error.message)
   }
 
+  const runID = process.env['GITHUB_RUN_ID']
+  const encodedPayload = Buffer.from(payload).toString('base64')
+  const artifactName = `${runID}-${encodedPayload}`
   if (process.env['CI']) {
     try {
-      const runID = process.env['GITHUB_RUN_ID']
-      const encodedPayload = Buffer.from(payload).toString('base64')
-      const artifactName = `${runID}-${encodedPayload}`
-
       core.info(`Uploading dummy artifact ${artifactName}`)
       const artifactClient = create()
       const response = await artifactClient.uploadArtifact(artifactName, ['init.gradle'], '.', {}) 
@@ -48,7 +47,11 @@ allprojects { project ->
     } catch (error) {
       core.setFailed(error.message)
     }
-  } 
+  } else {
+    core.info('Not in a CI environment')
+    core.info(`Raw payload is ${payload}`)
+    core.info(`Would have uploaded a artifact with the name '${artifactName}'`)
+  }
 }
 
 run()
